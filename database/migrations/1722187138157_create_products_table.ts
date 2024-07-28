@@ -12,7 +12,7 @@ export default class extends BaseSchema {
       table.string('description').notNullable()
       table.string('category').nullable()
       table.string('brand').notNullable()
-      table.decimal('price').notNullable()
+      table.decimal('price', 12, 2).notNullable()
       table.string('supplier').notNullable()
       table.enum('status', Object.values(ProductStatus)).notNullable().defaultTo('available')
 
