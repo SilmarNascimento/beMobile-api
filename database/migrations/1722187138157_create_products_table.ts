@@ -18,8 +18,8 @@ export default class extends BaseSchema {
         .notNullable()
         .defaultTo('available')
 
-      table.timestamp('created_at')
-      table.timestamp('updated_at')
+      table.timestamp('created_at').notNullable()
+      table.timestamp('updated_at').notNullable()
     })
   }
 
