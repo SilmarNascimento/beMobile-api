@@ -1,4 +1,5 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
+import { ProductStatus } from '../../app/types/product_status.js'
 
 export default class extends BaseSchema {
   protected tableName = 'products'
@@ -13,10 +14,7 @@ export default class extends BaseSchema {
       table.string('brand').notNullable()
       table.decimal('price').notNullable()
       table.string('supplier').notNullable()
-      table
-        .enum('status', ['available', 'out_of_stock', 'discontinued'])
-        .notNullable()
-        .defaultTo('available')
+      table.enum('status', Object.values(ProductStatus)).notNullable().defaultTo('available')
 
       table.timestamp('created_at').notNullable()
       table.timestamp('updated_at').notNullable()
