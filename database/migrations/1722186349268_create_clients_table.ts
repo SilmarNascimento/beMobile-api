@@ -8,8 +8,9 @@ export default class extends BaseSchema {
       table.increments('id').notNullable()
       table.string('name').notNullable()
       table.string('cpf').notNullable().unique().checkLength('=', 11)
-      table.timestamp('created_at').notNullable()
-      table.timestamp('updated_at').nullable()
+
+      table.timestamp('created_at', { useTz: true }).notNullable().defaultTo(this.now())
+      table.timestamp('updated_at', { useTz: true }).nullable()
     })
   }
 

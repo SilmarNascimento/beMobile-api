@@ -16,8 +16,8 @@ export default class extends BaseSchema {
       table.string('supplier').notNullable()
       table.enum('status', Object.values(ProductStatus)).notNullable().defaultTo('available')
 
-      table.timestamp('created_at').notNullable()
-      table.timestamp('updated_at').notNullable()
+      table.timestamp('created_at', { useTz: true }).notNullable().defaultTo(this.now())
+      table.timestamp('updated_at', { useTz: true }).nullable()
     })
   }
 
