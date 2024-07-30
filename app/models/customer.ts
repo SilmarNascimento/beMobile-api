@@ -4,9 +4,8 @@ import Address from './address.js'
 import Telephone from './telephone.js'
 import { HasMany, HasOne } from '@adonisjs/lucid/types/relations'
 import Sale from './sale.js'
-import User from './user.js'
 
-export default class Client extends BaseModel {
+export default class Customer extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
@@ -21,9 +20,6 @@ export default class Client extends BaseModel {
 
   @hasOne(() => Telephone)
   declare telephone: HasOne<typeof Telephone>
-
-  @hasOne(() => User)
-  declare user: HasOne<typeof User>
 
   @hasMany(() => Sale)
   declare sales: HasMany<typeof Sale>

@@ -13,7 +13,7 @@ export default class extends BaseSchema {
         .notNullable()
         .unsigned()
         .references('id')
-        .inTable('clients')
+        .inTable('customers')
         .onUpdate('CASCADE')
         .onDelete('CASCADE')
 
