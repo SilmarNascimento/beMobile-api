@@ -14,11 +14,11 @@ export default class extends BaseSchema {
       table.string('country')
 
       table
-        .integer('client_id')
+        .integer('customer_id')
         .notNullable()
         .unsigned()
         .references('id')
-        .inTable('customer')
+        .inTable('customers')
         .onUpdate('CASCADE')
         .onDelete('CASCADE')
 
