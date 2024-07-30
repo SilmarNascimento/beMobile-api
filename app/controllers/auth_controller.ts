@@ -23,21 +23,10 @@ export default class AuthController {
   /**
    * Authenticate the User
    */
-  async login({ request, response, auth }: HttpContext) {
-    const { email, password } = request.only(['email', 'password'])
-    const user = await User.findBy('email', email)
-    if (!user) {
-      response.abort('Invalid credentials')
-    }
+  async login({ request, auth }: HttpContext) {
+    const { email, password } = request.all()
+    const user = await User.verifyCredentials(email, password)
 
-    await hash.verify(user!.password, password)
-    await User.verifyCredentials(email, password)
-    
-
-    // Gere o token
-    const token = await auth.use('api').generate(user)
-
-    // Retorne o token
-    return response.ok({ token })
+    return await auth.use('jwt').generate(user)
   }
 }
