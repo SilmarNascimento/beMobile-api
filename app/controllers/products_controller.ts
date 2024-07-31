@@ -1,10 +1,19 @@
+import Product from '#models/product'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class ProductsController {
   /**
    * Display a list of resource
    */
-  async index({}: HttpContext) {}
+  async index({}: HttpContext) {
+    const products = await Product.query()
+      .whereNotNull('deleted_at')
+      .orderBy([
+        { column: 'product_name', order: 'asc' },
+        { column: 'id', order: 'asc' },
+      ])
+    return products
+  }
 
   /**
    * Show individual record
