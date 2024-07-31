@@ -1,5 +1,5 @@
 import Customer from '#models/customer'
-import { createCustomerValidator } from '#validators/customer_validator'
+import { createCustomerValidator, updateCustomerValidator } from '#validators/customer_validator'
 import type { HttpContext } from '@adonisjs/core/http'
 import db from '@adonisjs/lucid/services/db'
 
@@ -18,7 +18,7 @@ export default class CustomersController {
   async show({ params, request }: HttpContext) {
     const { year, month } = request.qs()
 
-    const client = await Customer.query()
+    const customer = await Customer.query()
       .where('id', params.id)
       .preload('address', (columns) =>
         columns.select(['street', 'number', 'zip_code', 'city', 'state'])
@@ -38,7 +38,7 @@ export default class CustomersController {
       .orderBy('id', 'asc')
       .firstOrFail()
 
-    return client
+    return customer
   }
 
   /**
@@ -47,10 +47,14 @@ export default class CustomersController {
   async store({ request, response }: HttpContext) {
     const reqBody = request.only(['name', 'cpf', 'address', 'telephone'])
     const payload = await createCustomerValidator.validate(reqBody)
-    const newClient = await db.transaction(async (trx) => {
+    const newCustomer = await db.transaction(async (trx) => {
       const { address, telephone, ...data } = payload
 
       data.cpf = data.cpf.replace(/\D/g, '')
+      const customerFoundByCpf = await Customer.findBy('cpf', payload.cpf)
+      if (customerFoundByCpf) {
+        return response.badRequest({ message: 'Cpf already registered' })
+      }
       telephone.number = telephone.number.replace(/\D/g, '')
 
       const customer = new Customer()
@@ -65,7 +69,10 @@ export default class CustomersController {
       return customer
     })
 
-    return response.created(newClient)
+    await newCustomer?.load('address')
+    await newCustomer?.load('telephone')
+
+    return response.created(newCustomer)
   }
 
   /**
@@ -75,14 +82,27 @@ export default class CustomersController {
     const customerId = Number(params.id)
     const customerFoundById = await Customer.findOrFail(customerId)
 
-    const data = request.only(['name', 'cpf', 'address'])
-    const customerFoundByCpf = await Customer.findByOrFail(data.cpf)
+    const reqBody = request.only(['name', 'cpf', 'address', 'telephone'])
+    const payload = await updateCustomerValidator.validate(reqBody)
 
+    const customerFoundByCpf = await Customer.findByOrFail('cpf', payload.cpf)
     if (customerFoundByCpf && customerFoundByCpf.id !== customerId) {
-      return response.badRequest({ message: 'Cpf already in used' })
+      return response.badRequest({ message: 'Cpf already registered' })
     }
 
-    await customerFoundById.merge(data).save()
+    customerFoundById.merge(payload)
+    await customerFoundById.save()
+
+    const address = await customerFoundById.related('address').query().firstOrFail()
+    address.merge(payload.address)
+    await address.save()
+
+    const telephone = await customerFoundById.related('telephone').query().firstOrFail()
+    telephone.merge(payload.telephone)
+    await telephone.save()
+
+    await customerFoundById?.load('address')
+    await customerFoundById?.load('telephone')
 
     return response.send(customerFoundById)
   }

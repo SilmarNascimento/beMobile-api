@@ -2,7 +2,7 @@ import { DateTime } from 'luxon'
 import { BaseModel, column, hasMany, hasOne } from '@adonisjs/lucid/orm'
 import Address from './address.js'
 import Telephone from './telephone.js'
-import { HasMany, HasOne } from '@adonisjs/lucid/types/relations'
+import type { HasMany, HasOne } from '@adonisjs/lucid/types/relations'
 import Sale from './sale.js'
 
 export default class Customer extends BaseModel {
