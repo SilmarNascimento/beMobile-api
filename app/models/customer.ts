@@ -10,10 +10,10 @@ export default class Customer extends BaseModel {
   declare id: number
 
   @column()
-  declare name: number
+  declare name: string
 
   @column()
-  declare cpf: number
+  declare cpf: string
 
   @hasOne(() => Address)
   declare address: HasOne<typeof Address>

@@ -1,6 +1,5 @@
 import User from '#models/user'
-import { signUpValidator } from '#validators/auth_validator'
-import hash from '@adonisjs/core/services/hash'
+import { loginValidator, signUpValidator } from '#validators/auth_validator'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class AuthController {
@@ -11,8 +10,8 @@ export default class AuthController {
     const data = request.only(['fullName', 'email', 'password'])
     const payload = await signUpValidator.validate(data)
 
-    const isAlreadyRegistered = await User.findBy('email', payload.email)
-    if (isAlreadyRegistered) {
+    const userFound = await User.findBy('email', payload.email)
+    if (userFound) {
       return response.conflict({ message: 'User already registered' })
     }
 
@@ -25,6 +24,7 @@ export default class AuthController {
    */
   async login({ request, auth }: HttpContext) {
     const { email, password } = request.all()
+    await loginValidator.validate({ email, password })
     const user = await User.verifyCredentials(email, password)
 
     return await auth.use('jwt').generate(user)

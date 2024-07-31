@@ -8,7 +8,7 @@ export default class Telephone extends BaseModel {
   declare id: number
 
   @column()
-  declare number: number
+  declare number: string
 
   @column()
   declare clientId: number
