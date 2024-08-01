@@ -59,7 +59,7 @@ export default class ProductsController {
     const productFound = await Product.findOrFail(productId)
 
     if (productFound.deletedAt !== null) {
-      return response.notFound({ message: 'Produto não encontrado' })
+      return response.notFound({ message: 'Produto not available' })
     }
 
     const reqBody = request.only(productAttributeFields)
