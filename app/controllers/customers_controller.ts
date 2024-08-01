@@ -1,5 +1,9 @@
 import Customer from '#models/customer'
-import { createCustomerValidator, updateCustomerValidator } from '#validators/customer_validator'
+import {
+  createCustomerValidator,
+  customerAttributeFields,
+  updateCustomerValidator,
+} from '#validators/customer_validator'
 import type { HttpContext } from '@adonisjs/core/http'
 import db from '@adonisjs/lucid/services/db'
 
@@ -45,7 +49,7 @@ export default class CustomersController {
    * Handle form submission for the create action
    */
   async store({ request, response }: HttpContext) {
-    const reqBody = request.only(['name', 'cpf', 'address', 'telephone'])
+    const reqBody = request.only(customerAttributeFields)
     const payload = await createCustomerValidator.validate(reqBody)
     const newCustomer = await db.transaction(async (trx) => {
       const { address, telephone, ...data } = payload
@@ -82,7 +86,7 @@ export default class CustomersController {
     const customerId = Number(params.id)
     const customerFoundById = await Customer.findOrFail(customerId)
 
-    const reqBody = request.only(['name', 'cpf', 'address', 'telephone'])
+    const reqBody = request.only(customerAttributeFields)
     const payload = await updateCustomerValidator.validate(reqBody)
 
     const customerFoundByCpf = await Customer.findByOrFail('cpf', payload.cpf)
@@ -93,13 +97,17 @@ export default class CustomersController {
     customerFoundById.merge(payload)
     await customerFoundById.save()
 
-    const address = await customerFoundById.related('address').query().firstOrFail()
-    address.merge(payload.address)
-    await address.save()
+    if (payload.address) {
+      const address = await customerFoundById.related('address').query().firstOrFail()
+      address.merge(payload.address)
+      await address.save()
+    }
 
-    const telephone = await customerFoundById.related('telephone').query().firstOrFail()
-    telephone.merge(payload.telephone)
-    await telephone.save()
+    if (payload.telephone) {
+      const telephone = await customerFoundById.related('telephone').query().firstOrFail()
+      telephone.merge(payload.telephone)
+      await telephone.save()
+    }
 
     await customerFoundById?.load('address')
     await customerFoundById?.load('telephone')
