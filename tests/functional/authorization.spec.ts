@@ -1,7 +1,7 @@
 import db from '@adonisjs/lucid/services/db'
 import { test } from '@japa/runner'
 
-test.group('Authorization', async (group) => {
+test.group('Authorization test', async (group) => {
   group.each.setup(async () => {
     await db.beginGlobalTransaction()
   })
