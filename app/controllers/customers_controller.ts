@@ -54,16 +54,16 @@ export default class CustomersController {
   async store({ request, response }: HttpContext) {
     const reqBody = request.only(customerAttributeFields)
     const payload = await createCustomerValidator.validate(reqBody)
+
+    const { address, telephone, ...data } = payload
+    data.cpf = data.cpf.replace(/\D/g, '')
+    const customerFoundByCpf = await Customer.findBy('cpf', payload.cpf)
+    if (customerFoundByCpf) {
+      return response.badRequest({ message: 'Cpf already registered' })
+    }
+    telephone.number = telephone.number.replace(/\D/g, '')
+
     const newCustomer = await db.transaction(async (trx) => {
-      const { address, telephone, ...data } = payload
-
-      data.cpf = data.cpf.replace(/\D/g, '')
-      const customerFoundByCpf = await Customer.findBy('cpf', payload.cpf)
-      if (customerFoundByCpf) {
-        return response.badRequest({ message: 'Cpf already registered' })
-      }
-      telephone.number = telephone.number.replace(/\D/g, '')
-
       const customer = new Customer()
       customer.useTransaction(trx)
       customer.name = data.name
@@ -93,7 +93,7 @@ export default class CustomersController {
     const payload = await updateCustomerValidator.validate(reqBody)
 
     const customerFoundByCpf = await Customer.findByOrFail('cpf', payload.cpf)
-    if (customerFoundByCpf && customerFoundByCpf.id !== customerId) {
+    if (customerFoundByCpf.id !== customerId) {
       return response.badRequest({ message: 'Invalid data' })
     }
 
