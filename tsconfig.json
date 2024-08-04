@@ -3,5 +3,12 @@
   "compilerOptions": {
     "rootDir": "./",
     "outDir": "./build",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./app/*"],
+      "@ioc:Adonis/Core/*": ["./node_modules/@adonisjs/core/build/adonis-typings/*"],
+      "@ioc:Adonis/Lucid/*": ["./node_modules/@adonisjs/lucid/build/adonis-typings/*"]
+    },
+    "types": ["@adonisjs/core", "@adonisjs/lucid"]
   },
 }

@@ -12,7 +12,10 @@ export default class CustomersController {
    * Display a list of resource
    */
   async index({}: HttpContext) {
-    const customers = Customer.query().preload('telephone').preload('address').orderBy('id', 'asc')
+    const customers = await Customer.query()
+      .preload('telephone')
+      .preload('address')
+      .orderBy('id', 'asc')
     return customers
   }
 
@@ -91,7 +94,7 @@ export default class CustomersController {
 
     const customerFoundByCpf = await Customer.findByOrFail('cpf', payload.cpf)
     if (customerFoundByCpf && customerFoundByCpf.id !== customerId) {
-      return response.badRequest({ message: 'Cpf already registered' })
+      return response.badRequest({ message: 'Invalid data' })
     }
 
     customerFoundById.merge(payload)
@@ -119,11 +122,13 @@ export default class CustomersController {
    * Delete record
    */
   async destroy({ params, response }: HttpContext) {
-    const customerId = Number(params.id)
-
-    const customer = await Customer.findOrFail(customerId)
-    await customer.delete()
-
-    return response.noContent()
+    try {
+      const customerId = Number(params.id)
+      const customer = await Customer.findOrFail(customerId)
+      await customer.delete()
+      return response.noContent()
+    } catch (error) {
+      return response.notFound({ message: 'Customer not found' })
+    }
   }
 }

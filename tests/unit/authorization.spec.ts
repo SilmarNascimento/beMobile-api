@@ -9,11 +9,9 @@ test.group('AuthController', (group) => {
   let authController: AuthController
   let context: Partial<HttpContextContract>
 
-  // Setup before each test
   group.each.setup(() => {
     authController = new AuthController()
 
-    // Mock HttpContext
     context = {
       request: {
         only: sinon.stub(),
@@ -30,14 +28,13 @@ test.group('AuthController', (group) => {
     }
   })
 
-  // Restore the default sandbox after each test
   group.each.teardown(() => {
     sinon.restore()
   })
 
   test('should register a new user', async ({ assert }) => {
-    const requestData = { fullName: 'John Doe', email: 'john@example.com', password: 'password' }
-    const validatedData = { fullName: 'John Doe', email: 'john@example.com', password: 'password' }
+    const requestData = { fullName: 'New User', email: 'new_user@test.com', password: 'password' }
+    const validatedData = { fullName: 'New User', email: 'new_user@test.com', password: 'password' }
 
     context.request.only.withArgs(['fullName', 'email', 'password']).returns(requestData)
     sinon.stub(signUpValidator, 'validate').resolves(validatedData)
@@ -50,8 +47,8 @@ test.group('AuthController', (group) => {
   })
 
   test('should not register a user if email is already registered', async ({ assert }) => {
-    const requestData = { fullName: 'John Doe', email: 'john@example.com', password: 'password' }
-    const validatedData = { fullName: 'John Doe', email: 'john@example.com', password: 'password' }
+    const requestData = { fullName: 'New User', email: 'new_user@test.com', password: 'password' }
+    const validatedData = { fullName: 'New User', email: 'new_user@test.com', password: 'password' }
 
     context.request.only.withArgs(['fullName', 'email', 'password']).returns(requestData)
     sinon.stub(signUpValidator, 'validate').resolves(validatedData)
@@ -63,11 +60,12 @@ test.group('AuthController', (group) => {
   })
 
   test('should authenticate the user', async ({ assert }) => {
-    const requestData = { email: 'john@example.com', password: 'password' }
-    const user = { id: 1, email: 'john@example.com' }
+    const requestData = { email: 'new_user@test.com', password: 'password' }
+    const validatedData = { email: 'new_user@test.com', password: 'password' }
+    const user = { id: 1, email: 'new_user@test.com' }
 
-    context.request.all.returns(requestData)
-    sinon.stub(loginValidator, 'validate').resolves()
+    context.request.only.withArgs(['email', 'password']).returns(requestData)
+    sinon.stub(loginValidator, 'validate').resolves(validatedData)
     sinon.stub(User, 'verifyCredentials').resolves(user as any)
     context.auth.generate.resolves('jwt_token')
 
