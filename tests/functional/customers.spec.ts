@@ -2,7 +2,7 @@ import db from '@adonisjs/lucid/services/db'
 import { ApiClient } from '@japa/api-client'
 import { test } from '@japa/runner'
 
-test.group('Customers', (group) => {
+test.group('Customers functional tests', (group) => {
   let userToken: string
   let userId: string
 
@@ -54,7 +54,6 @@ test.group('Customers', (group) => {
       })
       .bearerToken(userToken)
     const { id } = storeResponse.body()
-    console.log(id)
 
     userId = id
   })

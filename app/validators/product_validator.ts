@@ -35,5 +35,6 @@ export const updateProductValidator = vine.compile(
     price: vine.number().optional(),
     supplier: vine.string().optional(),
     status: vine.enum(Object.values(ProductStatus)).optional(),
+    restore: vine.boolean().optional(),
   })
 )

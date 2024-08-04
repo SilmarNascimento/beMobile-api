@@ -59,13 +59,16 @@ export default class ProductsController {
     const productFound = await Product.findOrFail(productId)
 
     if (productFound.deletedAt !== null) {
-      return response.notFound({ message: 'Produto not available' })
+      return response.notFound({ message: 'Product not available' })
     }
 
     const reqBody = request.only(productAttributeFields)
-    const payload = await updateProductValidator.validate(reqBody)
+    const { restore, ...payload } = await updateProductValidator.validate(reqBody)
 
     productFound.merge(payload)
+    if (restore) {
+      await productFound.restore()
+    }
     await productFound.save()
 
     return response.send(productFound)
