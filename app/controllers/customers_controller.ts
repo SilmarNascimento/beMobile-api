@@ -126,6 +126,7 @@ export default class CustomersController {
       const customerId = Number(params.id)
       const customer = await Customer.findOrFail(customerId)
       await customer.delete()
+
       return response.noContent()
     } catch (error) {
       return response.notFound({ message: 'Customer not found' })

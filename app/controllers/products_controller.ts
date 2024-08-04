@@ -27,7 +27,10 @@ export default class ProductsController {
    */
   async show({ params }: HttpContext) {
     const productId = Number(params.id)
-    const product = await Product.findOrFail(productId)
+    const product = await Product.query()
+      .whereNull('deleted_at')
+      .where('id', productId)
+      .firstOrFail()
 
     return product
   }
@@ -56,14 +59,13 @@ export default class ProductsController {
    */
   async update({ params, request, response }: HttpContext) {
     const productId = Number(params.id)
-    const productFound = await Product.findOrFail(productId)
+    const reqBody = request.only([...productAttributeFields, 'restore'])
+    const { restore, ...payload } = await updateProductValidator.validate(reqBody)
 
-    if (productFound.deletedAt !== null) {
+    const productFound = await Product.findOrFail(productId)
+    if (productFound.deletedAt !== null && !restore) {
       return response.notFound({ message: 'Product not available' })
     }
-
-    const reqBody = request.only(productAttributeFields)
-    const { restore, ...payload } = await updateProductValidator.validate(reqBody)
 
     productFound.merge(payload)
     if (restore) {
@@ -78,11 +80,14 @@ export default class ProductsController {
    * Delete record
    */
   async destroy({ params, response }: HttpContext) {
-    const productId = Number(params.id)
+    try {
+      const productId = Number(params.id)
+      const product = await Product.findOrFail(productId)
+      await product.softDelete()
 
-    const product = await Product.findOrFail(productId)
-    await product.softDelete()
-
-    return response.noContent()
+      return response.noContent()
+    } catch (error) {
+      return response.notFound({ message: 'Product not found' })
+    }
   }
 }

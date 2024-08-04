@@ -147,57 +147,86 @@ test.group('Product functional tests', (group) => {
     })
   })
 
-  // test('Could not update a customer by invalid cpf data', async ({ client }) => {
-  //   const response = await client
-  //     .put(`/api/customers/${userId}`)
-  //     .json({
-  //       ...customer02,
-  //       name: 'User new name',
-  //       cpf: customer01.cpf,
-  //     })
-  //     .bearerToken(userToken)
+  test('Should soft delete a product by its Id', async ({ client }) => {
+    const response = await client.delete(`/api/products/${productId}`).bearerToken(userToken)
 
-  //   response.assertStatus(404)
-  //   response.assertBodyContains({
-  //     message: 'Row not found',
-  //   })
-  // })
+    response.assertStatus(204)
+  })
 
-  // test('Could not update a customer by invalid cpf data and customerId', async ({ client }) => {
-  //   const secondCustomer = await client
-  //     .post('/api/customers')
-  //     .json({
-  //       ...customer01,
-  //     })
-  //     .bearerToken(userToken)
-  //   const { id } = secondCustomer.body()
+  test('Could not soft delete a product by invalid Id', async ({ client }) => {
+    const response = await client.delete(`/api/products/70`).bearerToken(userToken)
 
-  //   const response = await client
-  //     .put(`/api/customers/${id}`)
-  //     .json({
-  //       ...customer02,
-  //       name: 'User new name',
-  //     })
-  //     .bearerToken(userToken)
+    response.assertStatus(404)
+    response.assertBodyContains({
+      message: 'Product not found',
+    })
+  })
 
-  //   response.assertStatus(400)
-  //   response.assertBodyContains({
-  //     message: 'Invalid data',
-  //   })
-  // })
+  test('Could not show a product soft deleted by its Id', async ({ client }) => {
+    await client.delete(`/api/products/${productId}`).bearerToken(userToken)
 
-  // test('Should delete a customer by Id', async ({ client }) => {
-  //   const response = await client.delete(`/api/customers/${userId}`).bearerToken(userToken)
+    const response = await client.get(`/api/products/${productId}`).bearerToken(userToken)
 
-  //   response.assertStatus(204)
-  // })
+    response.assertStatus(404)
+    response.assertBodyContains({
+      message: 'Row not found',
+    })
+  })
 
-  // test('Could not delete a customer by invalid Id', async ({ client }) => {
-  //   const response = await client.delete(`/api/customers/70`).bearerToken(userToken)
+  test('Should update a product if it is soft deleted and will be restored', async ({ client }) => {
+    await client.delete(`/api/products/${productId}`).bearerToken(userToken)
 
-  //   response.assertStatus(404)
-  //   response.assertBodyContains({
-  //     message: 'Customer not found',
-  //   })
-  // })
+    const response = await client
+      .put(`/api/products/${productId}`)
+      .json({
+        ...product02,
+        productName: 'Lápis de cor',
+        restore: true,
+      })
+      .bearerToken(userToken)
+
+    response.assertStatus(200)
+    response.assertBodyContains({
+      productName: 'Lápis de cor',
+      brand: product02.brand,
+      status: product02.status,
+    })
+  })
+
+  test('Could not update a product if it is soft deleted and will not be restored', async ({
+    client,
+  }) => {
+    await client.delete(`/api/products/${productId}`).bearerToken(userToken)
+
+    const response = await client
+      .put(`/api/products/${productId}`)
+      .json({
+        ...product02,
+        productName: 'Lápis de cor',
+      })
+      .bearerToken(userToken)
+
+    response.assertStatus(404)
+    response.assertBodyContains({
+      message: 'Product not available',
+    })
+  })
+
+  test('Should restore a product if it is soft deleted', async ({ client }) => {
+    await client.delete(`/api/products/${productId}`).bearerToken(userToken)
+
+    const response = await client
+      .put(`/api/products/${productId}`)
+      .json({
+        restore: true,
+      })
+      .bearerToken(userToken)
+
+    response.assertStatus(200)
+    response.assertBodyContains({
+      productName: product02.productName,
+      brand: product02.brand,
+      status: product02.status,
+    })
+  })
 })
