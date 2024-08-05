@@ -239,7 +239,7 @@ Content-Type: application/json
 
 ### Rotas para o recurso de clientes (/api/customers)
 
-#### GET /customers
+#### GET /api/customers
 Retorna uma lista de todos os clientes.
 
 **Exemplo de requisição:**
@@ -276,7 +276,7 @@ Content-Type: application/json
 ```
 
 
-#### GET /customers/:id
+#### GET /api/customers/:id
 
 Retorna os detalhes de um cliente específico, incluindo endereço, telefone e vendas associadas. Essa rota ainda aceita query parameters year e month para filtrar as vendas associadas ao cliente.
 
@@ -285,6 +285,13 @@ Retorna os detalhes de um cliente específico, incluindo endereço, telefone e v
 - Query Parameters:
   - year (number, opcional): Ano para filtrar as vendas.
   - month (number, opcional): Mês para filtrar as vendas.
+
+**Exemplo de requisição:**
+
+```bash
+GET /api/customers/1
+GET /api/customers/1?year=2024&month=8
+```
 
 **Exemplo de Resposta:**
 
@@ -332,7 +339,6 @@ Content-Type: application/json
     }
   ]
 }
-
 ```
 
 **Possíveis Erros:**
@@ -349,7 +355,6 @@ Content-Type: application/json
 
 
 #### POST /api/customers
-
 Cria um novo cliente.
 
 **Parâmetros:**
@@ -419,7 +424,7 @@ Content-Type: application/json
 
 {
   "id": 1,
-  "name": "John Doe",
+  "name": "Username",
   "cpf": "12345678901",
   "address": {
     "street": "Main St",
@@ -446,7 +451,6 @@ Content-Type: application/json
   "message": "Cpf already registered"
 }
 ```
-
 
 
 #### PUT /api/customers/:id
@@ -595,6 +599,296 @@ Content-Type: application/json
 
 
 ### Rotas para o recurso de produtos (/api/products)
+
+#### GET /api/products
+Retorna uma lista de todos os produtos que não foram excluídos (soft delete).
+
+**Exemplo de requisição:**
+
+```bash
+GET /api/products
+```
+
+**Exemplo de Resposta:**
+
+```bash
+200 OK
+Content-Type: application/json
+
+[
+  {
+    "id": 1,
+    "productName": "shampoo",
+    "image": "url.do.produto",
+    "description": "shampoo para cabelos secos",
+    "category": "produto de beleza",
+    "brand": "Seda",
+    "price": 19.99,
+    "supplier": "Seda",
+    "status": "available",
+    "createdAt": "2024-08-05T10:00:00.000Z",
+    "updatedAt": "2024-08-05T10:00:00.000Z"
+  },
+  ...
+]
+```
+
+#### GET /api/products/:id
+Retorna os detalhes de um produto específico, desde que não tenha sido excluído (soft delete).
+
+**Parâmetros:**
+- id (number, obrigatório): ID do produto.
+
+**Exemplo de requisição:**
+
+```bash
+GET /api/products/1
+```
+
+**Exemplo de Resposta:**
+
+```bash
+200 OK
+Content-Type: application/json
+
+{
+  "id": 1,
+  "productName": "shampoo",
+  "image": "url.do.produto",
+  "description": "shampoo para cabelos secos",
+  "category": "produto de beleza",
+  "brand": "Seda",
+  "price": 19.99,
+  "supplier": "Seda",
+  "status": "available",
+  "createdAt": "2024-08-05T10:00:00.000Z",
+  "updatedAt": "2024-08-05T10:00:00.000Z"
+}
+```
+
+**Possíveis Erros:**
+- 404 Not Found: Produto não encontrado com o Id fornecido ou soft delete.
+
+```bash
+404 Not Found
+Content-Type: application/json
+
+{
+  "message": "Row not found"
+}
+```
+
+#### POST /api/products
+Cria um novo produto.
+
+**Parâmetros:**
+- productName (string, obrigatório): Nome do produto. Deve ter pelo menos 3 caracteres.
+- image (string, obrigatório): URL da imagem do produto.
+- description (string, obrigatório): Descrição do produto.
+- category (string, obrigatório): Categoria do produto.
+- brand (string, obrigatório): Marca do produto.
+- price (number, obrigatório): Preço do produto.
+- supplier (string, obrigatório): Fornecedor do produto.
+- status (enum, obrigatório): Status do produto ('available', 'out_of_stock', 'discontinued').
+
+**Validação:**
+Os parâmetros são validados usando o 'createProductValidator'
+
+```bash
+enum ProductStatus {
+  AVAILABLE = 'available',
+  OUT_OF_STOCK = 'out_of_stock',
+  DISCONTINUED = 'discontinued',
+}
+
+createProductValidator = vine.compile(
+  vine.object({
+    productName: vine.string().trim().minLength(3),
+    image: vine.string(),
+    description: vine.string(),
+    category: vine.string(),
+    brand: vine.string(),
+    price: vine.number(),
+    supplier: vine.string(),
+    status: vine.enum(Object.values(ProductStatus)),
+  })
+)
+```
+
+**Exemplo de requisição:**
+
+```bash
+POST /api/products
+Content-Type: application/json
+
+{
+  "productName": "shampoo",
+  "image": "url.do.produto",
+  "description": "shampoo para cabelos secos",
+  "category": "produto de beleza",
+  "brand": "Seda",
+  "price": 19.99,
+  "supplier": "Seda",
+  "status": "available"
+}
+```
+
+**Exemplo de Resposta:**
+
+```bash
+201 Created
+Content-Type: application/json
+
+{
+  "id": 1,
+  "productName": "shampoo",
+  "image": "url.do.produto",
+  "description": "shampoo para cabelos secos",
+  "category": "produto de beleza",
+  "brand": "Seda",
+  "price": 19.99,
+  "supplier": "Seda",
+  "status": "available",
+  "createdAt": "2024-08-05T10:00:00.000Z",
+  "updatedAt": "2024-08-05T10:00:00.000Z"
+}
+```
+
+#### PUT /api/products/:id
+Atualiza os detalhes de um produto específico.
+
+**Parâmetros:**
+- id (number, obrigatório): ID do produto.
+- productName (string, opcional): Nome do produto. Deve ter pelo menos 3 caracteres.
+- image (string, opcional): URL da imagem do produto.
+- description (string, opcional): Descrição do produto.
+- category (string, opcional): Categoria do produto.
+- brand (string, opcional): Marca do produto.
+- price (number, opcional): Preço do produto.
+- supplier (string, opcional): Fornecedor do produto.
+- status (enum, opcional): Status do produto ('available', 'out_of_stock', 'discontinued').
+- restore (boolean, opcional): Se o produto deve ser restaurado se estiver excluído (soft delete).
+
+**Validação:**
+Os parâmetros são validados usando o 'updateProductValidator'
+
+```bash
+enum ProductStatus {
+  AVAILABLE = 'available',
+  OUT_OF_STOCK = 'out_of_stock',
+  DISCONTINUED = 'discontinued',
+}
+
+updateProductValidator = vine.compile(
+  vine.object({
+    productName: vine.string().trim().minLength(3).optional(),
+    image: vine.string().optional(),
+    description: vine.string().optional(),
+    category: vine.string().optional(),
+    brand: vine.string().optional(),
+    price: vine.number().optional(),
+    supplier: vine.string().optional(),
+    status: vine.enum(Object.values(ProductStatus)).optional(),
+    restore: vine.boolean().optional(),
+  })
+)
+```
+
+**Exemplo de requisição:**
+
+```bash
+PUT /api/products/1
+Content-Type: application/json
+
+{
+  "productName": "shampoo atualizado",
+  "image": "url.atualizada",
+  "description": "shampoo para cabelos secos atualizado",
+  "category": "produto de beleza",
+  "brand": "Seda",
+  "price": 29.99,
+  "supplier": "Seda",
+  "status": "available",
+  "restore": true
+}
+```
+
+**Exemplo de Resposta:**
+
+```bash
+200 OK
+Content-Type: application/json
+
+{
+  "id": 1,
+  "productName": "shampoo atualizado",
+  "image": "url.atualizada",
+  "description": "shampoo para cabelos secos atualizado",
+  "category": "produto de beleza",
+  "brand": "Seda",
+  "price": 29.99,
+  "supplier": "Seda",
+  "status": "available",
+  "createdAt": "2024-08-05T10:00:00.000Z",
+  "updatedAt": "2024-08-05T10:00:00.000Z"
+}
+```
+
+**Possíveis Erros:**
+- 404 Not Found: Produto não encontrado.
+
+```bash
+404 Not Found
+Content-Type: application/json
+
+{
+  "message": "Row not found"
+}
+```
+
+- 404 Not Found: Produto em soft delete porém não será restaurado.
+
+```bash
+404 Not Found
+Content-Type: application/json
+
+{
+  "message": "Product not available"
+}
+```
+
+
+#### DELETE /api/products/:id
+Exclui um produto específico (soft delete).
+
+**Parâmetros:**
+- id (number, obrigatório): ID do produto.
+
+**Exemplo de requisição:**
+
+```bash
+DELETE /api/products/1
+```
+
+**Exemplo de Resposta:**
+
+```bash
+204 No Content
+```
+
+**Possíveis Erros:**
+- 404 Not Found: Produto não encontrado.
+
+```bash
+404 Not Found
+Content-Type: application/json
+
+{
+  "message": "Product not found"
+}
+```
+
+
 
 ### Rotas para o recurso de vendas (/api/sales)
 
