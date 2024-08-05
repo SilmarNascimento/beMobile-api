@@ -246,6 +246,7 @@ Retorna uma lista de todos os clientes.
 
 ```bash
 GET /api/customers
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
 ```
 
 **Exemplo de Resposta:**
@@ -290,7 +291,10 @@ Retorna os detalhes de um cliente específico, incluindo endereço, telefone e v
 
 ```bash
 GET /api/customers/1
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
+
 GET /api/customers/1?year=2024&month=8
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
 ```
 
 **Exemplo de Resposta:**
@@ -397,6 +401,7 @@ createCustomerValidator = vine.compile(
 
 ```bash
 POST /api/customers
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
 Content-Type: application/json
 
 {
@@ -457,7 +462,8 @@ Content-Type: application/json
 Atualiza os detalhes de um cliente específico.
 
 **Parâmetros:**
-- name (string, obrigatório): Nome do cliente. Deve ter pelo menos 3 caracteres.
+- id (number, obrigatório): ID do cliente.
+- name (string, opcional): Nome do cliente. Deve ter pelo menos 3 caracteres.
 - cpf (string, opcional): CPF do cliente. Deve ter exatamente 11 caracteres.
 - address (object, opcional):
   - street (string, opcional): Rua.
@@ -498,6 +504,7 @@ updateCustomerValidator = vine.compile(
 
 ```bash
 PUT /api/customers/1
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
 Content-Type: application/json
 
 {
@@ -577,6 +584,7 @@ Exclui um cliente específico.
 
 ```bash
 DELETE /api/customers/1
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
 ```
 
 **Exemplo de Resposta:**
@@ -607,6 +615,7 @@ Retorna uma lista de todos os produtos que não foram excluídos (soft delete).
 
 ```bash
 GET /api/products
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
 ```
 
 **Exemplo de Resposta:**
@@ -643,6 +652,7 @@ Retorna os detalhes de um produto específico, desde que não tenha sido excluí
 
 ```bash
 GET /api/products/1
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
 ```
 
 **Exemplo de Resposta:**
@@ -719,6 +729,7 @@ createProductValidator = vine.compile(
 
 ```bash
 POST /api/products
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
 Content-Type: application/json
 
 {
@@ -798,6 +809,7 @@ updateProductValidator = vine.compile(
 
 ```bash
 PUT /api/products/1
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
 Content-Type: application/json
 
 {
@@ -868,6 +880,7 @@ Exclui um produto específico (soft delete).
 
 ```bash
 DELETE /api/products/1
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
 ```
 
 **Exemplo de Resposta:**
@@ -891,6 +904,113 @@ Content-Type: application/json
 
 
 ### Rotas para o recurso de vendas (/api/sales)
+
+#### POST /api/sales
+Cria uma nova venda associada a um cliente existente, contendo uma lista de produtos e suas respectivas quantidades.
+
+**Parâmetros:**
+- customerId (number, obrigatório): ID do cliente.
+- products (array de objetos, obrigatório): array de objetos que contem o Id do produto e sua quantidade.
+  - productId (number, obrigatório): ID do produto.
+  - quantity (number, obrigatório): quantidade comprada do produto.
+
+**Validação:**
+Os parâmetros são validados usando o 'createSaleValidator'
+
+```bash
+createSaleValidator = vine.compile(
+  vine.object({
+    customerId: vine.number(),
+    products: vine.array(
+      vine.object({
+        productId: vine.number(),
+        quantity: vine.number(),
+      })
+    ),
+  })
+)
+```
+
+**Exemplo de requisição:**
+
+```bash
+POST /api/sales
+Authorization: Bearer YOUR_JWT_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "customerId": 1,
+  "products": [
+    {
+      "productId": 1,
+      "quantity": 1
+    },
+    {
+      "productId": 2,
+      "quantity": 2
+    }
+  ]
+}
+```
+
+**Exemplo de Resposta:**
+
+```bash
+201 Created
+Content-Type: application/json
+
+{
+  "id": 1,
+  "customerId": 1,
+  "totalPrice": 39.97,
+  "createdAt": "2023-08-05T12:34:56.000Z",
+  "updatedAt": "2023-08-05T12:34:56.000Z",
+  "items": [
+    {
+      "id": 1,
+      "saleId": 1,
+      "productId": 1,
+      "quantity": 1,
+      "price": 19.99,
+      "createdAt": "2023-08-05T12:34:56.000Z",
+      "updatedAt": "2023-08-05T12:34:56.000Z"
+    },
+    {
+      "id": 2,
+      "saleId": 1,
+      "productId": 2,
+      "quantity": 2,
+      "price": 9.99,
+      "createdAt": "2023-08-05T12:34:56.000Z",
+      "updatedAt": "2023-08-05T12:34:56.000Z"
+    }
+  ]
+}
+```
+
+**Possíveis Erros:**
+- 404 Not Found: Customer not found.
+
+```bash
+404 Not Found
+Content-Type: application/json
+
+{
+  "message": "Customer not found"
+}
+```
+
+- 404 Not Found: Product not found or available.
+
+```bash
+404 Not Found
+Content-Type: application/json
+
+{
+  "message": "Product not found or available"
+}
+```
+
 
 # Autor
 
