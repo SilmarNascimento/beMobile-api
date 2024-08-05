@@ -112,13 +112,12 @@ Ao subir a aplicação basta acessar o endereço 'localhost:3333/docs' para ter 
 
 ![Rotas da aplicação](https://raw.githubusercontent.com/SilmarNascimento/beMobile-api/main/assets/image.png)
 
-## Documentação das rotas
 
-### Autenticação
+## Autenticação
 
 As únicas rotas desprotegidas da aplicação são as rotas de documentação do swagger e de registro e login de usuários. Portanto, para um usuário conseguir interagir com outras rotas da aplicação ele deve estar logado e com um token JWT válido.
 
-#### POST /api/register
+### POST /api/register
 
 Registra um novo usuário
 
@@ -180,7 +179,7 @@ Content-Type: application/json
 ```
 
 
-#### POST /api/login
+### POST /api/login
 
 Autentica um usuário e retorna um token JWT.
 
@@ -237,9 +236,9 @@ Content-Type: application/json
 ```
 
 
-### Rotas para o recurso de clientes (/api/customers)
+## Rotas para o recurso de clientes (/api/customers)
 
-#### GET /api/customers
+### GET /api/customers
 Retorna uma lista de todos os clientes.
 
 **Exemplo de requisição:**
@@ -277,7 +276,7 @@ Content-Type: application/json
 ```
 
 
-#### GET /api/customers/:id
+### GET /api/customers/:id
 
 Retorna os detalhes de um cliente específico, incluindo endereço, telefone e vendas associadas. Essa rota ainda aceita query parameters year e month para filtrar as vendas associadas ao cliente.
 
@@ -358,7 +357,7 @@ Content-Type: application/json
 ```
 
 
-#### POST /api/customers
+### POST /api/customers
 Cria um novo cliente.
 
 **Parâmetros:**
@@ -458,7 +457,7 @@ Content-Type: application/json
 ```
 
 
-#### PUT /api/customers/:id
+### PUT /api/customers/:id
 Atualiza os detalhes de um cliente específico.
 
 **Parâmetros:**
@@ -574,7 +573,7 @@ Content-Type: application/json
 ```
 
 
-#### DELETE /api/customers/:id
+### DELETE /api/customers/:id
 Exclui um cliente específico.
 
 **Parâmetros:**
@@ -606,9 +605,9 @@ Content-Type: application/json
 ```
 
 
-### Rotas para o recurso de produtos (/api/products)
+## Rotas para o recurso de produtos (/api/products)
 
-#### GET /api/products
+### GET /api/products
 Retorna uma lista de todos os produtos que não foram excluídos (soft delete).
 
 **Exemplo de requisição:**
@@ -642,7 +641,7 @@ Content-Type: application/json
 ]
 ```
 
-#### GET /api/products/:id
+### GET /api/products/:id
 Retorna os detalhes de um produto específico, desde que não tenha sido excluído (soft delete).
 
 **Parâmetros:**
@@ -688,7 +687,7 @@ Content-Type: application/json
 }
 ```
 
-#### POST /api/products
+### POST /api/products
 Cria um novo produto.
 
 **Parâmetros:**
@@ -765,7 +764,7 @@ Content-Type: application/json
 }
 ```
 
-#### PUT /api/products/:id
+### PUT /api/products/:id
 Atualiza os detalhes de um produto específico.
 
 **Parâmetros:**
@@ -870,7 +869,7 @@ Content-Type: application/json
 ```
 
 
-#### DELETE /api/products/:id
+### DELETE /api/products/:id
 Exclui um produto específico (soft delete).
 
 **Parâmetros:**
@@ -903,9 +902,9 @@ Content-Type: application/json
 
 
 
-### Rotas para o recurso de vendas (/api/sales)
+## Rotas para o recurso de vendas (/api/sales)
 
-#### POST /api/sales
+### POST /api/sales
 Cria uma nova venda associada a um cliente existente, contendo uma lista de produtos e suas respectivas quantidades.
 
 **Parâmetros:**
