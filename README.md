@@ -190,6 +190,7 @@ Autentica um usuário e retorna um token JWT.
 
 **Validação:**
 Os parâmetros são validados usando o 'loginValidator'
+
 ```bash
 loginValidator = vine.compile(
   vine.object({
@@ -236,7 +237,7 @@ Content-Type: application/json
 ```
 
 
-### Rotas para o recurso de clientes (/customers)
+### Rotas para o recurso de clientes (/api/customers)
 
 #### GET /customers
 Retorna uma lista de todos os clientes.
@@ -317,13 +318,13 @@ Content-Type: application/json
       "updatedAt": "2024-08-01T14:53:47.000+00:00",
       "product": {
         "id": 2,
-        "productName": "shanloo",
-        "image": "url nova do shampoooo",
-        "description": "produto para o cabelo bunitu",
+        "productName": "shampoo",
+        "image": "url_imagem_shampoo",
+        "description": "produto para o cabelos secos",
         "category": "produto de beleza",
         "brand": "Seda",
         "price": "21.00",
-        "supplier": "wow",
+        "supplier": "Farmácia",
         "status": "available",
         "createdAt": "2024-08-01T01:59:58.000+00:00",
         "updatedAt": "2024-08-01T02:50:41.000+00:00"
@@ -347,11 +348,255 @@ Content-Type: application/json
 ```
 
 
+#### POST /api/customers
+
+Cria um novo cliente.
+
+**Parâmetros:**
+- name (string, obrigatório): Nome do cliente. Deve ter pelo menos 3 caracteres.
+- cpf (string, obrigatório): CPF do cliente. Deve ter exatamente 11 caracteres.
+- address (object, obrigatório):
+  - street (string, obrigatório): Rua.
+  - number (number, opcional): Número.
+  - zipCode (string, obrigatório): Código postal.
+  - city (string, obrigatório): Cidade.
+  - state (string, obrigatório): Estado.
+  - country (string, obrigatório): País.
+- telephone (object, obrigatório):
+  - number (string, obrigatório): Número de telefone.
+
+**Validação:**
+Os parâmetros são validados usando o 'createCustomerValidator'
+
+```bash
+createCustomerValidator = vine.compile(
+  vine.object({
+    name: vine.string().trim().minLength(3),
+    cpf: vine.string().fixedLength(11),
+    address: vine.object({
+      street: vine.string(),
+      number: vine.number().optional(),
+      zipCode: vine.string(),
+      city: vine.string(),
+      state: vine.string(),
+      country: vine.string(),
+    }),
+    telephone: vine.object({
+      number: vine.string(),
+    }),
+  })
+)
+```
+
+**Exemplo de requisição:**
+
+```bash
+POST /api/customers
+Content-Type: application/json
+
+{
+  "name": "Username",
+  "cpf": "12345678901",
+  "address": {
+    "street": "Main St",
+    "number": 100,
+    "zipCode": "12345",
+    "city": "Springfield",
+    "state": "IL",
+    "country": "USA"
+  },
+  "telephone": {
+    "number": "1234567890"
+  }
+}
+```
+
+**Exemplo de Resposta:**
+
+```bash
+201 Created
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "John Doe",
+  "cpf": "12345678901",
+  "address": {
+    "street": "Main St",
+    "number": 100,
+    "zipCode": "12345",
+    "city": "Springfield",
+    "state": "IL",
+    "country": "USA"
+  },
+  "telephone": {
+    "number": "1234567890"
+  }
+}
+```
+
+**Possíveis Erros:**
+- 400 Bad Request: CPF já registrado.
+
+```bash
+400 Bad Request
+Content-Type: application/json
+
+{
+  "message": "Cpf already registered"
+}
+```
 
 
-### Rotas para o recurso de produtos (/products)
 
-### Rotas para o recurso de vendas (/sales)
+#### PUT /api/customers/:id
+Atualiza os detalhes de um cliente específico.
+
+**Parâmetros:**
+- name (string, obrigatório): Nome do cliente. Deve ter pelo menos 3 caracteres.
+- cpf (string, opcional): CPF do cliente. Deve ter exatamente 11 caracteres.
+- address (object, opcional):
+  - street (string, opcional): Rua.
+  - number (number, opcional): Número.
+  - zipCode (string, opcional): Código postal.
+  - city (string, opcional): Cidade.
+  - state (string, opcional): Estado.
+  - country (string, opcional): País.
+- telephone (object, opcional):
+  - number (string, opcional): Número de telefone.
+
+**Validação:**
+Os parâmetros são validados usando o 'updateCustomerValidator'
+
+```bash
+updateCustomerValidator = vine.compile(
+  vine.object({
+    name: vine.string().trim().minLength(3).optional(),
+    cpf: vine.string().fixedLength(11).optional(),
+    address: vine.object({
+      street: vine.string().optional(),
+      number: vine.number().optional(),
+      zipCode: vine.string().optional(),
+      city: vine.string().optional(),
+      state: vine.string().optional(),
+      country: vine.string().optional(),
+    })
+    .optional(),
+    telephone: vine.object({
+      number: vine.string(),
+    })
+    .optional(),
+  })
+)
+```
+
+**Exemplo de requisição:**
+
+```bash
+PUT /api/customers/1
+Content-Type: application/json
+
+{
+  "name": "new username",
+  "cpf": "12345678901",
+  "address": {
+    "street": "Main Av",
+    "number": 101,
+    "zipCode": "12345",
+    "city": "Springfield",
+    "state": "IL",
+    "country": "USA"
+  },
+  "telephone": {
+    "number": "0987654321"
+  }
+}
+```
+
+**Exemplo de Resposta:**
+
+```bash
+200 OK
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "new username",
+  "cpf": "12345678901",
+  "createdAt": "2024-07-31T16:11:08.000+00:00",
+	"updatedAt": "2024-07-31T16:11:19.971+00:00"
+  "address": {
+    "street": "Main St",
+    "number": 101,
+    "zipCode": "12345",
+    "city": "Springfield",
+    "state": "IL",
+    "country": "USA"
+  },
+  "telephone": {
+    "number": "0987654321"
+  }
+}
+```
+
+**Possíveis Erros:**
+- 400 Bad Request: Dados inválidos.
+
+```bash
+400 Bad Request
+Content-Type: application/json
+
+{
+  "message": "Invalid data"
+}
+```
+
+- 404 Not Found: Usuário não encontrado.
+
+```bash
+404 Not Found
+Content-Type: application/json
+
+{
+  "message": "Row not found"
+}
+```
+
+
+#### DELETE /api/customers/:id
+Exclui um cliente específico.
+
+**Parâmetros:**
+- id (number, obrigatório): ID do cliente.
+
+**Exemplo de requisição:**
+
+```bash
+DELETE /api/customers/1
+```
+
+**Exemplo de Resposta:**
+
+```bash
+204 No Content
+```
+
+**Possíveis Erros:**
+- 404 Not Found: Usuário não encontrado.
+
+```bash
+404 Not Found
+Content-Type: application/json
+
+{
+  "message": "Customer not found"
+}
+```
+
+
+### Rotas para o recurso de produtos (/api/products)
+
+### Rotas para o recurso de vendas (/api/sales)
 
 # Autor
 
