@@ -45,4 +45,4 @@ router
   .prefix('api/products')
   .use(middleware.auth())
 
-router.post('/api/sales', [SalesController, 'store'])
+router.post('/api/sales', [SalesController, 'store']).use(middleware.auth())

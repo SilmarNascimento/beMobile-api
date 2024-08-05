@@ -4,7 +4,7 @@ import { test } from '@japa/runner'
 
 test.group('Product functional tests', (group) => {
   let userToken: string
-  let productId: string
+  let productId: number
 
   const product01 = {
     productName: 'shampoo',
@@ -52,7 +52,7 @@ test.group('Product functional tests', (group) => {
       .bearerToken(userToken)
 
     const { id } = storeResponse.body()
-    productId = id
+    productId = Number(id)
   })
 
   group.each.teardown(async () => {
