@@ -6,7 +6,7 @@
 O Teste Técnico Back-end BeTalent é uma API para gerenciamento de vendas, desenvolvida com o framework AdonisJS. A aplicação permite que usuários autenticados manipulem informações de clientes e produtos, incluindo criação, listagem, edição e deleção. Além disso, permite o registro de compras feitas por clientes, com informações detalhadas dos produtos e suas quantidades.
 
 ## Modelo conceitual
-![Modelo Conceitual]("assets\diagram_ER.png")
+![Modelo Conceitual](https://raw.githubusercontent.com/SilmarNascimento/beMobile-api/main/assets/diagram_ER.png)
 
 # Tecnologias utilizadas
 ## Back end
@@ -110,7 +110,7 @@ Após subir o container, a aplicação estará disponível na porta 3333. Para u
 Abaixo está uma descrição detalhada de cada rota disponível na API, incluindo os métodos HTTP, URLs, parâmetros esperados e exemplos de requisições e respostas. As rotas da aplicação podem ser visualizadas na imagem abaixo. Para interagir com a aplicação, podemos usar um cliente HTTP como Insomnia ou ThunderClient. Além disso, a aplicação possui documentação Swagger para facilitar o seu uso.
 Ao subir a aplicação basta acessar o endereço 'localhost:3333/docs' para ter acesso à documentação swagger da aplicação
 
-![Rotas da aplicação]("assets\image.png")
+![Rotas da aplicação](https://raw.githubusercontent.com/SilmarNascimento/beMobile-api/main/assets/image.png)
 
 ## Documentação das rotas
 
