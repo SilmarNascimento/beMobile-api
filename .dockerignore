@@ -1,0 +1,7 @@
+dist
+Dockerfile
+.git
+.dockerignore
+.gitignore
+.env
+.env.test
