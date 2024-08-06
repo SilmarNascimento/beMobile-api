@@ -995,6 +995,10 @@ Content-Type: application/json
 }
 ```
 
+# Dificuldades Encontrada
+
+Apesar de ter desenvolvido os arquivos para a conteinerização e a orquestração da aplicação backend com o banco de dados, foram encontrados alguns problemas na conexão com o banco de dados nas configurações definidas no docker-compose.yml.
+
 
 # Autor
 
