@@ -21,7 +21,7 @@ O Teste Técnico Back-end BeTalent é uma API para gerenciamento de vendas, dese
 
 # Como executar o projeto
 
-O projeto pode ser executado localmente ou utilizando Docker. Primeiro, clone o repositório:
+Para executar o projeto localmente, primeiro, clone o repositório:
 
 ```bash
 # clonar repositório
@@ -89,21 +89,6 @@ Após a configuração das variáveis de ambiente para conexão com o banco de d
 # entrar na pasta raiz do projeto back end
 node ace migration:run
 ```
-
-## Executar o projeto com Docker
-### Pré-requisitos: Docker
-
-Para rodar o projeto com Docker, execute os comandos abaixo:
-
-```bash
-# entrar na pasta raiz do projeto back end
-cd beMobile-api
-
-# subir um container com a aplicação
-docker compose up -d
-```
-
-Após subir o container, a aplicação estará disponível na porta 3333. Para usar outra porta, ajuste o mapeamento no 'docker-compose.yml'.
 
 # Rotas da aplicação
 
