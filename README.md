@@ -1,49 +1,163 @@
-# Teste Técnico Back-end BeTalent 
-[![NPM](https://img.shields.io/npm/l/react)](https://github.com/devsuperior/sds1-wmazoni/blob/master/LICENSE) 
+[TYPESCRIPT__BADGE]: https://img.shields.io/badge/typescript-D4FAFF?style=for-the-badge&logo=typescript
+[ADONIS__BADGE]: https://img.shields.io/badge/adonisjs-%23220052.svg?style=for-the-badge&logo=adonisjs&logoColor=white
+[MYSQL__BADGE]: https://img.shields.io/badge/mysql-4479A1.svg?style=for-the-badge&logo=mysql&logoColor=white
+[Docker__BADGE]: https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white
+[JWT__BADGE]: https://img.shields.io/badge/JWT-black?style=for-the-badge&logo=JSON%20web%20tokens
 
-# Sobre o projeto
+<h1 align="center" style="font-weight: bold;" id="top">Teste Técnico Gerenciamento de Vendas 💻</h1>
+
+<h1 align="center">
+
+  <span>![Adonis][ADONIS__BADGE]</span>
+  <span>![Typescript][TYPESCRIPT__BADGE]</span>
+  <span>![JWT][JWT__BADGE]</span>
+  <span>![MySQL][MYSQL__BADGE]</span>
+  <span>![Docker][Docker__BADGE]</span>
+</h1>
+
+<p align="center">
+  <a href="#about">Sobre o Projeto</a> •
+  <a href="#tech">Tecnologias Utilizadas</a> •
+  <a href="#started">Como Executar</a> •
+  <a href="#routes">Rotas da Aplicação</a> •
+  <a href="#author">Autor</a>
+</p>
+
+<h2 id="about">📌 Sobre o Projeto</h2>
 
 O Teste Técnico Back-end BeTalent é uma API para gerenciamento de vendas, desenvolvida com o framework AdonisJS. A aplicação permite que usuários autenticados manipulem informações de clientes e produtos, incluindo criação, listagem, edição e deleção. Além disso, permite o registro de compras feitas por clientes, com informações detalhadas dos produtos e suas quantidades.
 
 ## Modelo conceitual
-![Modelo Conceitual](https://raw.githubusercontent.com/SilmarNascimento/beMobile-api/main/assets/diagram_ER.png)
 
-# Tecnologias utilizadas
-## Back end
-- TypeScript
-- AdonisJS
-- JWT
-- Lucid
-- Japa / Sinon
+O modelo conceitual abaixo representa as principais entidades e seus relacionamentos na API. Além das entidades apresentadas, existe também a entidade Usuário por onde é feito a autenticação para acessar rotas protegidas utilizando JWT.
 
-## Banco de dados
-- MySQL
+```mermaid
+erDiagram
+    CUSTOMERS ||--o{ ADDRESSES : tem
+    CUSTOMERS ||--o{ TELEPHONES : tem
+    CUSTOMERS ||--o{ SALES : faz
+    SALES ||--|{ PRODUCT_SALES : contem
+    PRODUCTS ||--o{ PRODUCT_SALES : "vendido em"
 
-# Como executar o projeto
+    CUSTOMERS {
+        int id PK
+        varchar nome
+        varchar cpf
+        timestamp criado_em
+        timestamp atualizado_em
+    }
 
-Para executar o projeto localmente, primeiro, clone o repositório:
+    ADDRESSES {
+        int id PK
+        varchar rua
+        int numero
+        varchar cep
+        varchar cidade
+        varchar pais
+        int cliente_id FK
+        timestamp criado_em
+    }
+
+    TELEPHONES {
+        int id PK
+        varchar numero
+        int cliente_id FK
+        timestamp criado_em
+        timestamp atualizado_em
+    }
+
+    SALES {
+        int id PK
+        decimal preco_total
+        int cliente_id FK
+        int usuario_id FK
+        timestamp criado_em
+        timestamp atualizado_em
+    }
+
+    PRODUCT_SALES {
+        int id PK
+        int quantidade
+        decimal preco
+        int produto_id FK
+        int venda_id FK
+        timestamp criado_em
+        timestamp atualizado_em
+    }
+
+    PRODUCTS {
+        int id PK
+        varchar nome
+        varchar imagem
+        varchar descricao
+        varchar categoria
+        decimal preco
+        varchar fornecedor
+        timestamp criado_em
+        timestamp atualizado_em
+    }
+```
+
+[Voltar ao Início](#top)
+
+<br>
+
+<h2 id="tech">🖥️ Tecnologias Utilizadas</h2>
+
+### Back-end
+
+- [TypeScript](https://github.com/microsoft/TypeScript)
+- [Adonis](https://adonisjs.com/)
+- [JWT](https://jwt.io/)
+- [Lucid](https://docs.adonisjs.com/guides/database/lucid)
+- [Japa](https://japa.dev/docs/introduction)
+- [Sinon](https://github.com/sinonjs/sinon)
+
+### Banco de Dados
+
+- [MySQL](https://www.mysql.com/)
+
+[Voltar ao Início](#top)
+
+<br>
+
+<h2 id="started">🚀 Como Executar</h2>
+
+### Pre-requisitos
+
+Os pré-requisitos para rodar localmente o projeto são:
+
+- [NodeJS](https://github.com/nodejs/nodejs.org) >= 20.6
+- [MySQL](https://www.mysql.com/)
+
+O projeto também pode ser executado por containers, sendo assim os pré-requisitos são:
+
+- [Docker](https://www.docker.com/)
+
+### Cloning
+
+Para clonar o projeto, abra o terminal e execute o seguinte comando:
 
 ```bash
 # clonar repositório
 git clone git@github.com:SilmarNascimento/beMobile-api.git
 ```
 
-## Executar o projeto localmente
-### Pré-requisitos: 
-### - NodeJS >= 20.6
-### - MySQL 
+### Executar o Projeto Localmente
 
-Após clonar o repositório, siga os passos abaixo para acessar a pasta do projeto e instalar as dependências:
+Antes de iniciar o backend, é necessário subir o banco de dados MySQL localmente. Se você já tem o MySQL instalado, inicie o serviço e crie o banco de dados necessário para o projeto. Se preferir, pode usar o Docker para subir o banco rapidamente. Certifique-se de que o banco está rodando na porta `3306` e guarde as credenciais para configurar o backend.
+
+Após iniciar o serviço de banco de dados, instale as dependências do backend executando os seguintes comandos:
 
 ```bash
-# entrar na pasta raiz do projeto back end
+# entrar na pasta raiz do projeto backend
 cd beMobile-api
 
 # executar o projeto
 npm install
 ```
 
-Configure as variáveis de ambiente para conexão com o banco de dados MySQL. Crie um arquivo '.env' na raiz do projeto, usando o '.env.example' como base:
+Como a aplicação precisa se conectar a um banco de dados, será necessário configurar as credenciais corretas no arquivo `.env`. Crie um arquivo `.env` na raiz do projeto, usando o `.env.example` como base para fornecer o valor das variáveis `DB_HOST`, `DB_USER`, `DB_PASSWORD` e `DB_DATABASE` com seus valores reais:
 
 ```bash
 #.env
@@ -56,14 +170,14 @@ APP_KEY=pRD45ao_jypGcua3fws9iD8IzknoxCKj
 NODE_ENV=development
 
 #variáveis de ambiente para conexão com o banco de dados
-DB_HOST= # IP DO HOST DO MYSQL
+DB_HOST= # IP do Host do MYSQL
 DB_PORT=3306 # (A porta 3306 é a porta padrão do MySQL)
 DB_USER= #Usuário
 DB_PASSWORD= #Password do usuário
 DB_DATABASE= #Nome do Banco de dados
 ```
 
-(Opcional) Para rodar os testes, crie um arquivo '.env.test':
+(Opcional) Para rodar os testes, crie um arquivo `.env.test` na raiz do projeto:
 
 ```bash
 #.env.test
@@ -76,7 +190,7 @@ APP_KEY=pRD45ao_jypGcua3fws9iD8IzknoxCKj
 NODE_ENV=test
 
 #variáveis de ambiente para conexão com o banco de dados
-DB_HOST= # IP DO HOST DO MYSQL
+DB_HOST= # IP do Host do MYSQL de teste 
 DB_PORT=3306 # (A porta 3306 é a porta padrão do MySQL)
 DB_USER= #Usuário
 DB_PASSWORD= #Password do usuário
@@ -90,29 +204,80 @@ Após a configuração das variáveis de ambiente para conexão com o banco de d
 node ace migration:run
 ```
 
-# Rotas da aplicação
+A aplicação backend pode ser executada usando o seguinte comando:
 
-Abaixo está uma descrição detalhada de cada rota disponível na API, incluindo os métodos HTTP, URLs, parâmetros esperados e exemplos de requisições e respostas. As rotas da aplicação podem ser visualizadas na imagem abaixo. Para interagir com a aplicação, podemos usar um cliente HTTP como Insomnia ou ThunderClient. Além disso, a aplicação possui documentação Swagger para facilitar o seu uso.
-Ao subir a aplicação basta acessar o endereço 'localhost:3333/docs' para ter acesso à documentação swagger da aplicação
+```bash
+# subir a aplicação backend
+npm run dev
+```
 
-![Rotas da aplicação](https://raw.githubusercontent.com/SilmarNascimento/beMobile-api/main/assets/image.png)
+Esse comando irá iniciar o servidor da aplicação backend. Por padrão, ele estará disponível em <http://localhost:3333>.
 
+### Executar o Projeto com Docker
 
-## Autenticação
+Caso queira executar o projeto usando docker, após clonar o projeto, abra o arquivo `docker-compose.yaml` na raiz do projeto e edite as variáveis de ambiente no serviço de backend para a conexão com o banco de dados. Após a configuração das variáveis de ambiente, abra o terminal e execute as instruções abaixo:
 
-As únicas rotas desprotegidas da aplicação são as rotas de documentação do swagger e de registro e login de usuários. Portanto, para um usuário conseguir interagir com outras rotas da aplicação ele deve estar logado e com um token JWT válido.
+```bash
+# entrar na pasta raiz do projeto e executar o comando docker
+cd beMobile-api
+
+docker-compose up -d
+```
+
+Esse comando irá iniciar o servidor da aplicação backend. Por padrão, ele estará disponível em <http://localhost:3333>.
+
+[Voltar ao Início](#top)
+
+<br>
+
+<h2 id="routes">📍 Rotas da Aplicação</h2>
+
+ As rotas da aplicação podem ser visualizadas na tabela abaixo. Para interagir com a aplicação, podemos usar um cliente HTTP como Insomnia ou ThunderClient. Além disso, a aplicação possui documentação Swagger para facilitar o seu uso.
+Ao subir a aplicação basta acessar o endereço `localhost:3333/docs` para ter acesso à documentação swagger da aplicação
+
+| Método    | URL                             | Middleware | Descrição                                                                                                                         |
+|-----------|---------------------------------|------------|-----------------------------------------------------------------------------------------------------------------------------------|
+| `GET`     | <kbd>/swagger</kbd>             | -          | endpoint para acessar a documentação Swagger da API                                                                               |
+| `GET`     | <kbd>/docs</kbd>                | -          | endpoint para acessar a documentação da API                                                                                       |
+| `POST`    | <kbd>/api/register</kbd>        | -          | Registra um novo usuário                                                                                                          |
+| `POST`    | <kbd>/api/login</kbd>           | -          | Autentica um usuário e retorna um token JWT                                                                                       |
+| `GET`     | <kbd>/api/customers</kbd>       | <kbd>auth</kbd> | Retorna uma lista de todos os clientes                                                                                           |
+| `GET`     | <kbd>/api/customers/:id</kbd>   | <kbd>auth</kbd> | Retorna os detalhes de um cliente específico, incluindo endereço, telefone e vendas associadas. Query parameters opcionais year e month para filtrar as vendas associadas ao cliente |
+| `POST`    | <kbd>/api/customers</kbd>       | <kbd>auth</kbd> | Cria um novo cliente                                                                                                              |
+| `PUT`     | <kbd>/api/customers/:id</kbd>   | <kbd>auth</kbd> | Atualiza os detalhes de um cliente específico                                                                                     |
+| `DELETE`  | <kbd>/api/customers/:id</kbd>   | <kbd>auth</kbd> | Exclui um cliente específico                                                                                                      |
+| `GET`     | <kbd>/api/products</kbd>        | <kbd>auth</kbd> | Retorna uma lista de todos os produtos que não foram excluídos (soft delete)                                                     |
+| `GET`     | <kbd>/api/products/:id</kbd>    | <kbd>auth</kbd> | Retorna os detalhes de um produto específico, desde que não tenha sido excluído (soft delete)                                     |
+| `POST`    | <kbd>/api/products</kbd>        | <kbd>auth</kbd> | Cria um novo produto                                                                                                              |
+| `PUT`     | <kbd>/api/products/:id</kbd>    | <kbd>auth</kbd> | Atualiza os detalhes de um produto específico                                                                                     |
+| `DELETE`  | <kbd>/api/products/:id</kbd>    | <kbd>auth</kbd> | Exclui um produto específico (soft delete)                                                                                        |
+| `POST`    | <kbd>/api/sales</kbd>           | <kbd>auth</kbd> | Cria uma nova venda associada a um cliente existente, contendo uma lista de produtos e suas respectivas quantidades               |
+
+<br>
+
+Abaixo está uma descrição detalhada de cada rota disponível na API, incluindo os métodos HTTP, URLs, parâmetros esperados e exemplos de requisições e respostas.
+
+[Voltar ao Início](#top)
+
+<br>
+
+<h2 id="auth">Autenticação</h2>
+
+As únicas rotas desprotegidas da aplicação são as rotas de documentação do swagger e de registro e login de usuários. Portanto, para um usuário conseguir interagir com as outras rotas da aplicação ele deve estar logado e com um token JWT válido.
 
 ### POST /api/register
 
 Registra um novo usuário
 
 **Parâmetros:**
+
 - fullName (string, obrigatório): Nome completo do usuário. Deve ter pelo menos 3 caracteres.
 - email (string, obrigatório): Email do usuário. Deve ser um email válido.
 - password (string, obrigatório): Senha do usuário. Deve ter pelo menos 3 caracteres.
 
 **Validação:**
 Os parâmetros são validados usando o 'signUpValidator'
+
 ```bash
 signUpValidator = vine.compile(
   vine.object({
@@ -152,6 +317,7 @@ Content-Type: application/json
 ```
 
 **Possíveis Erros:**
+
 - 409 Conflict: Usuário já registrado.
 
 ```bash
@@ -163,12 +329,16 @@ Content-Type: application/json
 }
 ```
 
+[Voltar à Autenticação](#auth)
+
+<br>
 
 ### POST /api/login
 
 Autentica um usuário e retorna um token JWT.
 
 **Parâmetros:**
+
 - email (string, obrigatório): Email do usuário. Deve ser um email válido.
 - password (string, obrigatório): Senha do usuário. Deve ter pelo menos 3 caracteres.
 
@@ -209,6 +379,7 @@ Content-Type: application/json
 ```
 
 **Possíveis Erros:**
+
 - 401 Unauthorized: Credenciais inválidas.
 
 ```bash
@@ -220,10 +391,14 @@ Content-Type: application/json
 }
 ```
 
+[Voltar à Autenticação](#auth)
 
-## Rotas para o recurso de clientes (/api/customers)
+<br>
+
+<h2 id="route-customers">Rotas para o recurso de clientes (/api/customers)</h2>
 
 ### GET /api/customers
+
 Retorna uma lista de todos os clientes.
 
 **Exemplo de requisição:**
@@ -260,12 +435,16 @@ Content-Type: application/json
 ]
 ```
 
+[Voltar à Rota de Recursos de Clientes](#route-customers)
+
+<br>
 
 ### GET /api/customers/:id
 
 Retorna os detalhes de um cliente específico, incluindo endereço, telefone e vendas associadas. Essa rota ainda aceita query parameters year e month para filtrar as vendas associadas ao cliente.
 
 **Parâmetros:**
+
 - id (number, obrigatório): ID do cliente.
 - Query Parameters:
   - year (number, opcional): Ano para filtrar as vendas.
@@ -330,6 +509,7 @@ Content-Type: application/json
 ```
 
 **Possíveis Erros:**
+
 - 404 Not Found: Cliente não encontrado com o Id fornecido.
 
 ```bash
@@ -341,11 +521,16 @@ Content-Type: application/json
 }
 ```
 
+[Voltar à Rota de Recursos de Clientes](#route-customers)
+
+<br>
 
 ### POST /api/customers
+
 Cria um novo cliente.
 
 **Parâmetros:**
+
 - name (string, obrigatório): Nome do cliente. Deve ter pelo menos 3 caracteres.
 - cpf (string, obrigatório): CPF do cliente. Deve ter exatamente 11 caracteres.
 - address (object, obrigatório):
@@ -430,6 +615,7 @@ Content-Type: application/json
 ```
 
 **Possíveis Erros:**
+
 - 400 Bad Request: CPF já registrado.
 
 ```bash
@@ -441,11 +627,16 @@ Content-Type: application/json
 }
 ```
 
+[Voltar à Rota de Recursos de Clientes](#route-customers)
+
+<br>
 
 ### PUT /api/customers/:id
+
 Atualiza os detalhes de um cliente específico.
 
 **Parâmetros:**
+
 - id (number, obrigatório): ID do cliente.
 - name (string, opcional): Nome do cliente. Deve ter pelo menos 3 caracteres.
 - cpf (string, opcional): CPF do cliente. Deve ter exatamente 11 caracteres.
@@ -535,6 +726,7 @@ Content-Type: application/json
 ```
 
 **Possíveis Erros:**
+
 - 400 Bad Request: Dados inválidos.
 
 ```bash
@@ -557,11 +749,16 @@ Content-Type: application/json
 }
 ```
 
+[Voltar à Rota de Recursos de Clientes](#route-customers)
+
+<br>
 
 ### DELETE /api/customers/:id
+
 Exclui um cliente específico.
 
 **Parâmetros:**
+
 - id (number, obrigatório): ID do cliente.
 
 **Exemplo de requisição:**
@@ -578,6 +775,7 @@ Authorization: Bearer YOUR_JWT_TOKEN_HERE
 ```
 
 **Possíveis Erros:**
+
 - 404 Not Found: Usuário não encontrado.
 
 ```bash
@@ -589,10 +787,14 @@ Content-Type: application/json
 }
 ```
 
+[Voltar à Rota de Recursos de Clientes](#route-customers)
 
-## Rotas para o recurso de produtos (/api/products)
+<br>
+
+<h2 id="route-products">Rotas para o recurso de produtos (/api/products)</h2>
 
 ### GET /api/products
+
 Retorna uma lista de todos os produtos que não foram excluídos (soft delete).
 
 **Exemplo de requisição:**
@@ -626,10 +828,16 @@ Content-Type: application/json
 ]
 ```
 
+[Voltar à Rota de Recursos de Produtos](#route-products)
+
+<br>
+
 ### GET /api/products/:id
+
 Retorna os detalhes de um produto específico, desde que não tenha sido excluído (soft delete).
 
 **Parâmetros:**
+
 - id (number, obrigatório): ID do produto.
 
 **Exemplo de requisição:**
@@ -661,6 +869,7 @@ Content-Type: application/json
 ```
 
 **Possíveis Erros:**
+
 - 404 Not Found: Produto não encontrado com o Id fornecido ou soft delete.
 
 ```bash
@@ -672,10 +881,16 @@ Content-Type: application/json
 }
 ```
 
+[Voltar à Rota de Recursos de Produtos](#route-products)
+
+<br>
+
 ### POST /api/products
+
 Cria um novo produto.
 
 **Parâmetros:**
+
 - productName (string, obrigatório): Nome do produto. Deve ter pelo menos 3 caracteres.
 - image (string, obrigatório): URL da imagem do produto.
 - description (string, obrigatório): Descrição do produto.
@@ -749,10 +964,16 @@ Content-Type: application/json
 }
 ```
 
+[Voltar à Rota de Recursos de Produtos](#route-products)
+
+<br>
+
 ### PUT /api/products/:id
+
 Atualiza os detalhes de um produto específico.
 
 **Parâmetros:**
+
 - id (number, obrigatório): ID do produto.
 - productName (string, opcional): Nome do produto. Deve ter pelo menos 3 caracteres.
 - image (string, opcional): URL da imagem do produto.
@@ -831,6 +1052,7 @@ Content-Type: application/json
 ```
 
 **Possíveis Erros:**
+
 - 404 Not Found: Produto não encontrado.
 
 ```bash
@@ -853,11 +1075,16 @@ Content-Type: application/json
 }
 ```
 
+[Voltar à Rota de Recursos de Produtos](#route-products)
+
+<br>
 
 ### DELETE /api/products/:id
+
 Exclui um produto específico (soft delete).
 
 **Parâmetros:**
+
 - id (number, obrigatório): ID do produto.
 
 **Exemplo de requisição:**
@@ -874,6 +1101,7 @@ Authorization: Bearer YOUR_JWT_TOKEN_HERE
 ```
 
 **Possíveis Erros:**
+
 - 404 Not Found: Produto não encontrado.
 
 ```bash
@@ -885,14 +1113,18 @@ Content-Type: application/json
 }
 ```
 
+[Voltar à Rota de Recursos de Produtos](#route-products)
 
+<br>
 
-## Rotas para o recurso de vendas (/api/sales)
+<h2 id="route-sales">Rotas para o recurso de vendas (/api/sales)</h2>
 
 ### POST /api/sales
+
 Cria uma nova venda associada a um cliente existente, contendo uma lista de produtos e suas respectivas quantidades.
 
 **Parâmetros:**
+
 - customerId (number, obrigatório): ID do cliente.
 - products (array de objetos, obrigatório): array de objetos que contem o Id do produto e sua quantidade.
   - productId (number, obrigatório): ID do produto.
@@ -973,6 +1205,7 @@ Content-Type: application/json
 ```
 
 **Possíveis Erros:**
+
 - 404 Not Found: Customer not found.
 
 ```bash
@@ -995,13 +1228,16 @@ Content-Type: application/json
 }
 ```
 
-# Dificuldades Encontrada
+[Voltar à Rota de Recursos de Vendas](#route-sales)
 
-Apesar de ter desenvolvido os arquivos para a conteinerização e a orquestração da aplicação backend com o banco de dados, foram encontrados alguns problemas na conexão com o banco de dados nas configurações definidas no docker-compose.yml.
+[Voltar ao Início](#top)
 
+<br>
 
 # Autor
 
 Silmar Fernando do Nascimento
 
 https://www.linkedin.com/in/silmarnascimento/
+
+[Voltar ao Início](#top)

@@ -13,12 +13,14 @@ RUN npm install
 # Copiar o restante do código da aplicação
 COPY . .
 
+# Definir permissões para o script
+RUN chmod +x start.sh
+
 # Instalar as dependências globais necessárias para AdonisJS
 RUN npm install -g @adonisjs/cli
 
 # Expor a porta que a aplicação irá rodar
 EXPOSE 3333
 
-# Comando para rodar a aplicação em ambiente de desenvolvimento
-ENTRYPOINT ["npm", "run"]
-CMD [ "dev" ]
+# Rodar o script de inicialização e depois iniciar a aplicação
+CMD ["/bin/sh", "-c", "./start.sh && exec npm run dev"]
